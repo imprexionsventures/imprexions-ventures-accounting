@@ -48,7 +48,7 @@ const SEED = {
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-const fmt = (n) => Number(n || 0).toLocaleString("en-GH", { style: "currency", currency: "GHS" });
+const fmt = (n) => `₵${Number(n || 0).toFixed(2)}`;
 const today = () => new Date().toISOString().split("T")[0];
 const uuid  = () => Math.random().toString(36).slice(2, 9);
 const invId = (list) => `IV-${new Date().getFullYear()}-${String(list.length + 1).padStart(3,"0")}`;
@@ -1088,7 +1088,7 @@ export default function App() {
     }
   }, [currentUser]);
 
-  if(!currentUser) return <Login users={data.users} onLogin={u=>{ setUser(u); setPage("dashboard"); }}/>;
+  if(!currentUser) return <Login users={data.users} onLogin={u=>{ setUser(u); localStorage.setItem('current-user', JSON.stringify(u)); setPage("dashboard"); }}/>;
 
   const can = PERMISSIONS[currentUser.role] || PERMISSIONS.Viewer;
 
