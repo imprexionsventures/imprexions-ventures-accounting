@@ -1053,12 +1053,20 @@ export default function App() {
   const [data, setData]         = useState(SEED);
   const [page, setPage]         = useState("dashboard");
   const [currentUser, setUser]  = useState(null);
+  const [windowWidth, setWindowWidth] = useState(1024);
 
   useEffect(() => {
     const link = document.createElement("link");
     link.href  = FONT_URL;
     link.rel   = "stylesheet";
     document.head.appendChild(link);
+  }, []);
+
+  useEffect(() => {
+    const updateWidth = () => setWindowWidth(window.innerWidth);
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
   // Load data from localStorage
@@ -1168,7 +1176,7 @@ export default function App() {
       )}
 
       {/* Mobile Header */}
-      {window.innerWidth < 768 && (
+      {windowWidth < 768 && (
         <div style={{ background:"#111827",borderBottom:"1px solid #1e2436",padding:"12px 16px",display:"flex",alignItems:"center",gap:12,zIndex:50,minHeight:56 }}>
           <button onClick={()=>setMobileMenuOpen(!mobileMenuOpen)} style={{ background:"none",border:"none",color:"#f0a500",cursor:"pointer",minHeight:44,minWidth:44,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><line x1={3} y1={6} x2={21} y2={6}/><line x1={3} y1={12} x2={21} y2={12}/><line x1={3} y1={18} x2={21} y2={18}/></svg>
@@ -1179,7 +1187,7 @@ export default function App() {
 
       <div style={{ display:"flex",flex:1 }}>
         {/* Desktop Sidebar */}
-        <div style={{ width:230,background:"#111827",borderRight:"1px solid #1e2436",display:window.innerWidth < 768?"none":"flex",flexDirection:"column",flexShrink:0,position:"sticky",top:0,height:"100vh",overflowY:"auto" }}>
+        <div style={{ width:230,background:"#111827",borderRight:"1px solid #1e2436",display:windowWidth < 768?"none":"flex",flexDirection:"column",flexShrink:0,position:"sticky",top:0,height:"100vh",overflowY:"auto" }}>
         <div style={{ padding:"24px 20px 16px" }}>
           <div style={{ fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:2,color:"#f0a500",lineHeight:1.1 }}>IMPREXIONS<br/>VENTURES</div>
           <div style={{ fontSize:10,color:"#8892a4",letterSpacing:1,marginTop:2 }}>BUILDING MATERIALS</div>
@@ -1212,7 +1220,7 @@ export default function App() {
         </div>
 
         {/* Mobile Sidebar */}
-        <div style={{ width:230,background:"#111827",borderRight:"1px solid #1e2436",display:window.innerWidth < 768?"flex":"none",flexDirection:"column",flexShrink:0,position:"fixed",top:56,left:mobileMenuOpen?0:-230,height:"calc(100vh - 56px)",overflowY:"auto",zIndex:101,transition:"left 0.3s ease" }}>
+        <div style={{ width:230,background:"#111827",borderRight:"1px solid #1e2436",display:windowWidth < 768?"flex":"none",flexDirection:"column",flexShrink:0,position:"fixed",top:56,left:mobileMenuOpen?0:-230,height:"calc(100vh - 56px)",overflowY:"auto",zIndex:101,transition:"left 0.3s ease" }}>
           <nav style={{ flex:1,padding:"4px 10px" }}>
             {NAV.map(n=>(
               <button key={n.id} onClick={()=>handleNavClick(n.id)}
@@ -1240,7 +1248,7 @@ export default function App() {
 
       {/* Main content */}
       <div style={{ flex:1,overflow:"auto" }}>
-        <div style={{ padding:window.innerWidth < 768?"16px 12px":"32px 36px",maxWidth:1100,margin:"0 auto" }}>
+        <div style={{ padding:windowWidth < 768?"16px 12px":"32px 36px",maxWidth:1100,margin:"0 auto" }}>
           {page==="payments" ? <PaymentLedger/> :
            page==="users"    ? <UserManagement data={data} setData={setData} currentUser={currentUser}/> :
            <PageComponent data={data} setData={setData} can={can}/>}
