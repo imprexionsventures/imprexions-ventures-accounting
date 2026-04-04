@@ -1071,14 +1071,25 @@ export default function App() {
 
   // Load data from localStorage
   useEffect(() => {
-    const savedData = localStorage.getItem('accounting-data');
-    if (savedData) {
-      setData(JSON.parse(savedData));
+    try {
+      const savedData = localStorage.getItem('accounting-data');
+      if (savedData) {
+        setData(JSON.parse(savedData));
+      }
+    } catch (error) {
+      console.warn('Failed to load saved data:', error);
+      localStorage.removeItem('accounting-data');
     }
-    const savedUser = localStorage.getItem('current-user');
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setUser(user);
+
+    try {
+      const savedUser = localStorage.getItem('current-user');
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+        setUser(user);
+      }
+    } catch (error) {
+      console.warn('Failed to load current user:', error);
+      localStorage.removeItem('current-user');
     }
   }, []);
 
