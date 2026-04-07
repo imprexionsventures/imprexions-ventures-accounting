@@ -1050,6 +1050,7 @@ const Login = ({ users, onLogin }) => {
 // MAIN APP
 // ══════════════════════════════════════════════════════════════════════════
 export default function App() {
+  console.log('App component rendering...');
   const [data, setData]         = useState(SEED);
   const [page, setPage]         = useState("dashboard");
   const [currentUser, setUser]  = useState(null);
@@ -1181,8 +1182,11 @@ export default function App() {
 
   return (
     <div style={{ display:"flex",minHeight:"100vh",background:"#0f1420",fontFamily:"'DM Sans',sans-serif",color:"#e8eaf0",flexDirection:"column" }}>
+      {/* Debug indicator */}
+      <div style={{ position:"fixed",top:0,right:0,background:"red",color:"white",padding:"4px 8px",fontSize:"12px",zIndex:9999 }}>App Loaded</div>
+      
       {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && window.innerWidth < 768 && (
+      {mobileMenuOpen && windowWidth < 768 && (
         <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:99 }} onClick={()=>setMobileMenuOpen(false)}/>
       )}
 
