@@ -339,6 +339,66 @@ const Dashboard = ({ data }) => {
 };
 
 // ══════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════════════════════
+const Dashboard = ({ data }) => {
+  const totalRevenue   = data.invoices.filter(i=>i.status==="paid").reduce((s,i)=>s+i.total,0);
+  const outstanding    = data.invoices.filter(i=>i.status!=="paid").reduce((s,i)=>s+(i.total-paidAmount(i)),0);
+  const totalPurchases = data.purchases.reduce((s,p)=>s+p.total,0);
+  const inventoryValue = data.inventory.reduce((s,i)=>s+i.qty*i.cost,0);
+  const overdue        = data.invoices.filter(i=>i.status==="overdue");
+
+  const KPI = ({ label, value, color, sub }) => (
+    <div style={{ background:"#1a1f2e",border:`1px solid ${color}33`,borderRadius:10,padding:"20px 24px",flex:1,minWidth:160 }}>
+      <div style={{ fontSize:11,fontWeight:700,letterSpacing:1.5,color:"#8892a4",textTransform:"uppercase",marginBottom:8 }}>{label}</div>
+      <div style={{ fontSize:26,fontWeight:800,color,fontFamily:"'Bebas Neue',sans-serif",letterSpacing:1 }}>{value}</div>
+      {sub && <div style={{ fontSize:12,color:"#8892a4",marginTop:4 }}>{sub}</div>}
+    </div>
+  );
+
+  return (
+    <div>
+      <PageHeader title="Dashboard" sub="Imprexions Ventures — Building Materials" />
+      {overdue.length>0 && (
+        <div style={{ background:"#ef444415",border:"1px solid #ef4444",borderRadius:8,padding:"12px 16px",marginBottom:20,display:"flex",alignItems:"center",gap:10,color:"#ef4444",fontSize:14,fontWeight:600 }}>
+          <Icon name="warn" size={16}/> {overdue.length} invoice(s) are overdue — action required!
+        </div>
+      )}
+      <div style={{ display:"flex",gap:16,flexWrap:"wrap",marginBottom:28 }}>
+        <KPI label="Revenue Collected" value={fmt(totalRevenue)} color="#22c55e" sub="Fully paid invoices" />
+        <KPI label="Outstanding"        value={fmt(outstanding)}  color="#f59e0b" sub="Balance due" />
+        <KPI label="Total Purchases"    value={fmt(totalPurchases)} color="#60a5fa" sub="All purchase orders" />
+        <KPI label="Inventory Value"    value={fmt(inventoryValue)} color="#a78bfa" sub="At cost price" />
+      </div>
+      <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:20 }}>
+        <div style={{ background:"#1a1f2e",border:"1px solid #2d3448",borderRadius:10,padding:20 }}>
+          <h3 style={{ margin:"0 0 16px",fontSize:12,fontWeight:700,letterSpacing:1,color:"#8892a4",textTransform:"uppercase" }}>Recent Invoices</h3>
+          {[...data.invoices].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).map(inv=>{
+            const cust=data.customers.find(c=>c.id===inv.customerId);
+            return <div key={inv.id} style={{ display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #2d3448" }}>
+              <div><div style={{ fontSize:13,fontWeight:600,color:"#e8eaf0" }}>{inv.id}</div><div style={{ fontSize:12,color:"#8892a4" }}>{cust?.name}</div></div>
+              <div style={{ textAlign:"right" }}><div style={{ fontSize:14,fontWeight:700,color:"#e8eaf0" }}>{fmt(inv.total)}</div><Badge status={inv.status}/></div>
+            </div>;
+          })}
+        </div>
+        <div style={{ background:"#1a1f2e",border:"1px solid #2d3448",borderRadius:10,padding:20 }}>
+          <h3 style={{ margin:"0 0 16px",fontSize:12,fontWeight:700,letterSpacing:1,color:"#8892a4",textTransform:"uppercase" }}>Stock Levels</h3>
+          {data.inventory.map(item=>(
+            <div key={item.id} style={{ display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 0",borderBottom:"1px solid #2d3448" }}>
+              <div style={{ fontSize:13,color:"#e8eaf0" }}>{item.name}</div>
+              <div style={{ display:"flex",alignItems:"center",gap:8 }}>
+                <span style={{ fontSize:13,fontWeight:700,color:item.qty<50?"#ef4444":"#22c55e" }}>{item.qty.toLocaleString()}</span>
+                {item.qty<50 && <Icon name="warn" size={13}/>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ══════════════════════════════════════════════════════════════════════════
 // INVOICES
 // ══════════════════════════════════════════════════════════════════════════
 const Invoices = ({ data, setData, can }) => {
